@@ -41,3 +41,27 @@ class Resturent_PartnerProfile(models.Model):
     def __str__(self):
         return self.owner.username
 
+
+
+# resturent  and branches
+
+
+class Resturent(models.Model):
+
+    name=models.CharField(max_length=100,unique=True)
+    added_at=models.DateTimeField(auto_now_add=True)
+    owner=models.OneToOneField(Resturent_PartnerProfile,on_delete=models.CASCADE,related_name='resturent')
+    
+    def __str__(self):
+        return self.name
+
+class ResturentBranches(models.Model):
+
+    place=models.CharField(max_length=100)
+    address=models.TextField()
+    open_time=models.TimeField()
+    closing_time=models.TimeField()
+    main_resturent=models.ForeignKey(Resturent,on_delete=models.CASCADE,related_name='branches')
+
+    def __str__(self):
+        return f"{self.main_resturent.name} - {self.place}"

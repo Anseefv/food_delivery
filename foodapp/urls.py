@@ -27,6 +27,27 @@ partnerprofile_detail = PartnerProfileViewSet.as_view({
     'delete': 'destroy',
 })
 
+resturent_list = ResturentViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+resturent_detail = ResturentViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+branch_list = ResturentBranchViewset.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+branch_detail = ResturentBranchViewset.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
 
 urlpatterns = [
     
@@ -39,6 +60,10 @@ urlpatterns = [
     path('login/boyprofile/<int:pk>/', boyprofile_detail, name='boyprofile-detail'),
     path('login/partnerprofile/', partnerprofile_list, name='partnerprofile-list'),
     path('login/partnerprofile/<int:pk>/', partnerprofile_detail, name='partnerprofile-detail'),
+    path('login/resturent/', resturent_list, name='resturent_list'),
+    path('login/resturent/<int:pk>/', resturent_detail, name='resturent-detail'),
+    path('login/resturent/branch/', branch_list, name='branch_list'),
+    path('login/resturent/branch/<int:pk>/', branch_detail, name='branch_detail'),    
 
     
     

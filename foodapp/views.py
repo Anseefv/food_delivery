@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 
-# Create your views here.
+
 # login and registractions
 class CustomerRegister(CreateAPIView):
 
@@ -86,3 +86,71 @@ class PartnerProfileViewSet(ModelViewSet):
                                         })
             return serializer.save(owner=self.request.user)
 
+
+# resturent  and branches
+
+class ResturentViewSet(ModelViewSet):
+
+    authentication_classes=[TokenAuthentication]
+    serializer_class=ResturentSerializer
+    permission_classes=[IsAuthenticated,ResturentPermissions]
+
+
+    def get_queryset(self):
+        
+
+        if self.request.user.role=='admin':
+            return Resturent.objects.all()
+        
+        if self.request.user.role=='resturent_partner':
+            if self.request.method=='GET':
+                return Resturent.objects.all()
+            
+            data=Resturent_PartnerProfile.objects.filter(owner=self.request.user).first()
+            if not data:
+                raise ValidationError("partner must be partner_profile")
+            
+            return Resturent.objects.filter(owner=data)
+
+        return None
+
+    def perform_create(self, serializer):
+
+        data=Resturent_PartnerProfile.objects.filter(owner=self.request.user).first()
+        if not data:
+            raise ValidationError("partner must be partner_profile")
+
+        if Resturent.objects.filter(owner=data).exists():
+            raise ValidationError("already exist")
+
+        return serializer.save(owner=data)
+
+
+class ResturentBranchViewset(ModelViewSet):
+
+    authentication_classes=[TokenAuthentication]
+    serializer_class=ResturentBranchSerializer
+    permission_classes=[IsAuthenticated,BranchPermissions]
+
+    def get_queryset(self):
+
+        if self.request.user.role=='admin':
+            return ResturentBranches.objects.all()
+
+        if self.request.user.role=='resturent_partner':
+            if self.request.method=='GET':
+                return ResturentBranches.objects.all()
+        
+        return ResturentBranches.objects.filter(main_resturent__owner__owner=self.request.user)
+
+    
+    def perform_create(self, serializer):
+
+        data=Resturent.objects.filter(owner__owner=self.request.user).first()
+        if not data:
+            raise ValidationError("register main resturent")
+
+        return serializer.save(main_resturent=data)
+       
+
+    
